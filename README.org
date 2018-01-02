@@ -1,0 +1,32 @@
+#+TITLE: README
+#+DATE: <2017-12-21 Thu>
+#+AUTHOR: Nasy
+#+EMAIL: nasyxx@gmail.com
+
+* My Thoughts
+
+** Rendering blog source(~.org)~ files
+
++ read in
++ get ~TAGS~, ~CATEGORIES~ and other head information from every individual source files
++ render source individually to ~HTML~, because of this I do not want to parser ~.org~ files myself
++ get information from ~HTML~
++ merge the content of ~.org~ and ~HTML~.
+
+*** Read in
+
+What must be prioritized is that we have to read in our blog files. The question to be considered is whether the document to be read in has been rendered or modified already? To decide on this, we need to hash everything into a place that we can read every time. Here we can use ~xxhash~ since it is an extremely fast non-cryptographic hash algorithm. After that, we can read the text happily and hash it at the same time to avoid re-reading, or just ignore this file.
+
+*** Get ~TAGS~, ~CATEGORIES~ and other headers
+
+The second step, equalling worthy to do, is getting headers from our blog files. That is because, for a blog, tags or categories is significant to give the reader a clear picture of what he wants. In our opinions, ~{"date", "author", "tags", "categories", "title", "update"}~ is essential.
+
+*** Parse ~.org~ as ~HTML~
+
+Next step is rendering blog source file to ~HTML~ with emacs org-mode, which can significantly reduce our burden because we are lazy. In this rendering process, there is only one place to note, that is, do not render unchanged files yet.
+
+*** Get information from ~HTML~
+
+And then, it is the time to read the information from ~HTML~, which contains the main part of our blog, that we can simply use the packages, ~bs4~ and ~lxml~, to parse the ~HTML~. At the same time, we have to edit it to fit out website.
+
+*** Last, but not the least, we need to merge the content, from the ~HTML~ files, and the information, from the ~.org~ files, into a ~Dict/json~ which is used to return to the ~server.py~ to do next step.
