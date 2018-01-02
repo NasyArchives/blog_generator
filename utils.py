@@ -37,7 +37,6 @@ Useful utilities.
 
 Including:
 
-    * function: generate_config
     * function: bhash
     * class: Render
 
@@ -46,51 +45,15 @@ Copyright © 2017 by Nasy. All Rights Reserved.
 
 import hashlib
 from functools import lru_cache
-from typing import NamedTuple
 
 import xxhash
 
 from config import CONFIG
 
-CF_Blog = NamedTuple(
-    "CF_Blog", [
-        ("title", str),
-        ("description", str),
-        ("author", str),
-        ("path", str),
-        ("suffix", str),
-    ]
-)
-CF_Hash = NamedTuple("CF_Hash", [
-    ("method", str),
-    ("seed", int),
-])
-CF = NamedTuple("CF", [
-    ("blog", CF_Blog),
-    ("hash", CF_Hash),
-])
-
-
-def generate_config(
-        title: str = "Nasy Land",
-        description: str = "Nasy 的花园，栽花、养鱼以及闲聊d的d地方～",
-        author: str = "Nasy",
-        bpath: str = "blog",
-        fsuffix: str = "org",
-        method: str = "xxhash",
-        seed: str = "Nasy"
-) -> CF:
-    """Generate the config."""
-    return CF(
-        blog = CF_Blog(
-            title = title,
-            description = description,
-            author = author,
-            path = bpath,
-            suffix = fsuffix,
-        ),
-        hash = CF_Hash(method = method, seed = sum(map(ord, seed)))
-    )
+try:
+    import ujson as json
+except ImportError:
+    import json  # type: ignore
 
 
 @lru_cache(maxsize = 65536)
@@ -113,3 +76,40 @@ def bhash(
         hstr = xxhash.xxh64(content, seed = seed).hexdigest()
 
     return hstr
+
+
+class Render:
+    """A renderer of blog.
+
+    What must be prioritized is that we have to read in our blog files.
+        The question to be considered is whether the document to be read in has
+        been rendered or modified already? To decide on this, we need to hash
+        everything into a place that we can read every time. Here we can use
+        ~xxhash~ since it is an extremely fast non-cryptographic hash
+        algorithm. After that, we can read the text happily and hash it at the
+        same time to avoid re-reading, or just ignore this file.
+
+    The second step, equalling worthy to do, is getting headers from our blog
+        files. That is because, for a blog, tags or categories is significant
+        to give the reader a clear picture of what he wants. In our opinions,
+        `{"date", "author", "tags", "categories", "title", "update"}` is
+        essential.
+
+    Next step is rendering blog source file to `HTML` with emacs org-mode,
+        which can significantly reduce our burden because we are lazy. In this
+        rendering process, there is only one place to note, that is, do not
+        render unchanged files yet.
+
+    And then, it is the time to read the information from `HTML`, which
+        contains the main part of our blog, that we can simply use the
+        packages, `bs4` and `lxml`, to parse the `HTML`. At the same time, we
+        have to edit it to fit out website.
+
+    Last, but not the least, we need to merge the content, from the `HTML`
+        files, and the information, from the `.org` files, into a `Dict/json`
+        which is used to return to the `server.py` to do next step.
+    """
+
+    def __init__(self) -> None:
+        """Initilized Render."""
+        pass

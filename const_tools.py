@@ -30,24 +30,50 @@ Excited without bugs::
 * author: Nasy
 * date: Jan 2, 2018
 * email: echo bmFzeXh4QGdtYWlsLmNvbQo= | base64 -D
-* file: config.py
+* file: const_tools.py
 * license: MIT
-
-The configurations.
 
 Copyright © 2017 by Nasy. All Rights Reserved.
 """
-from const_tools import generate_config
+from typing import NamedTuple
 
-CONFIG = generate_config(
-    # Your Blog's Setting
-    title = "Nasy Land",
-    description = "Nasy 的花园，栽花、养鱼以及闲聊d的d地方～",
-    author = "Nasy",
-    bpath = "blog",
-    fsuffix = "org",
-
-    # Hash setting
-    method = "xxhash",
-    seed = "Nasy"
+# Config types
+CF_Blog = NamedTuple(
+    "CF_Blog", [
+        ("title", str),
+        ("description", str),
+        ("author", str),
+        ("path", str),
+        ("suffix", str),
+    ]
 )
+CF_Hash = NamedTuple("CF_Hash", [
+    ("method", str),
+    ("seed", int),
+])
+CF = NamedTuple("CF", [
+    ("blog", CF_Blog),
+    ("hash", CF_Hash),
+])
+
+
+def generate_config(
+        title: str = "Nasy Land",
+        description: str = "Nasy 的花园，栽花、养鱼以及闲聊d的d地方～",
+        author: str = "Nasy",
+        bpath: str = "blog",
+        fsuffix: str = "org",
+        method: str = "xxhash",
+        seed: str = "Nasy"
+) -> CF:
+    """Generate the config."""
+    return CF(
+        blog = CF_Blog(
+            title = title,
+            description = description,
+            author = author,
+            path = bpath,
+            suffix = fsuffix,
+        ),
+        hash = CF_Hash(method = method, seed = sum(map(ord, seed)))
+    )
