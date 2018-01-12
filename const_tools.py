@@ -35,7 +35,12 @@ Excited without bugs::
 
 Copyright © 2017 by Nasy. All Rights Reserved.
 """
-from typing import NamedTuple
+import pathlib
+from typing import Dict, NamedTuple, Set, Union
+
+# Path
+PH = Union[str, pathlib.Path]
+BI = Dict[str, Dict[str, Union[str, Set[str]]]]
 
 # Config types
 CF_Blog = NamedTuple(
