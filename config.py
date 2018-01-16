@@ -37,15 +37,16 @@ The configurations.
 
 Copyright © 2017 by Nasy. All Rights Reserved.
 """
-from const_tools import generate_config
+import pendulum
 
-CONFIG = generate_config(
+config = dict(
     # Your Blog's Setting
     title = "Nasy Land",
-    description = "Nasy 的花园，栽花、养鱼以及闲聊d的d地方～",
+    description = "Nasy 的花园，栽花、养鱼以及闲聊的地方～",
     author = "Nasy",
     bpath = "blog",
     fsuffix = "org",
+    copyright = f"Copyright © {pendulum.now().year} Nasy",
 
     # Hash setting
     method = "xxhash",

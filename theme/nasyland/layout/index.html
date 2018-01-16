@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block header %}
+<h1>{{ title }}</h1>
+<p class="description">
+    {{ description }}
+</p>
+{% include "nav.html" %}
+{% endblock %}
+
+{% block main %}
+<div id="container">
+    {% include "writing.html" %}
+</div>
+{% endblock %}
+
+{% block footer %}
+<div>
+    <p class="copyright">
+        {{ copyright }}
+    </p>
+</div>
+{% endblock %}

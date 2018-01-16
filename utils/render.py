@@ -30,7 +30,7 @@ Excited without bugs::
 * author: Nasy
 * date: Jan 2, 2018
 * email: echo bmFzeXh4QGdtYWlsLmNvbQo= | base64 -D
-* file: utils.py
+* file: utils/render.py
 * license: MIT
 
 Useful utilities.
@@ -42,46 +42,32 @@ Including:
 
 Copyright © 2017 by Nasy. All Rights Reserved.
 """
-import hashlib
 import logging
+import os
 import re
+import shutil
 import subprocess
-from functools import lru_cache
+from collections import Counter
 from pathlib import Path
-from typing import Dict, Optional, Set
+from typing import Dict, List, Optional, Set, Union
 
 import bs4
 import pendulum
-
-import xxhash
-from config import CONFIG
-from const_tools import BI, PH
+import requests as req
 from jinja2 import Environment, FileSystemLoader
 from ruamel.yaml import YAML
 
+from utils import BI, BL, CONFIG, PH, bhash
+
+assert Union
+
 yaml = YAML(typ = "safe")
-
-
-@lru_cache(maxsize = 65536)
-def bhash(
-        content: str,
-        method: str = CONFIG.hash.method,
-        seed: int = CONFIG.hash.seed
-) -> str:
-    """Hash the content of pathfile."""
-    if not method:
-        method = "xxhash"
-
-    if method == "sha1":
-        hstr = hashlib.sha1(content.encode()).hexdigest()
-    elif method == "sha256":
-        hstr = hashlib.sha256(content.encode()).hexdigest()
-    elif method == "md5":
-        hstr = hashlib.md5(content.encode()).hexdigest()
-    else:
-        hstr = xxhash.xxh64(content, seed = seed).hexdigest()
-
-    return hstr
+NWORD = set((
+    "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+    "+-=_[]{}.,。，？?$()（）【】「」『』!！！～~*/&%\"\'“”‘’\n\t<>``\\;:；："
+    "@#%^&|"
+))
+NWORD.add("")
 
 
 class Render:
@@ -152,13 +138,16 @@ class Render:
         bfiles = Path().glob(f"./{CONFIG.blog.path}/*.org")
         res = set()
         for path in bfiles:
+            if force:
+                res.add(path)
+                continue
             with path.open() as f:
                 logging.info(f"checking hash:{path.as_posix()}")
                 hsh = bhash(f.read())
                 phsh = bhash(path.stem)
                 red = False if bfhash.get(phsh) == hsh else True
                 bfhash[phsh] = hsh
-                if force or red:
+                if red:
                     res.add(path)
 
         # pylint: disable=E1101
@@ -193,7 +182,7 @@ class Render:
                 ).ctime()
                 res[bhashp]["title"] = path.stem
                 for ii in {"tags", "categories"}:
-                    res[bhashp][ii] = set()
+                    res[bhashp][ii] = set([f"no {ii}"])
                 for line in f:
                     if line[0] == "\n" or line[0:2] != "#+" or ":" not in line:
                         n += 1
@@ -219,7 +208,7 @@ class Render:
                             ).ctime()
                     if key in {"tags", "categories"}:
                         value = set(re.split(r",\s*", value))
-                        res[bhashp][key] |= value
+                        res[bhashp][key] = value
                         continue
                     if key in NEEDED:
                         res[bhashp][key] = value
@@ -265,7 +254,7 @@ class Render:
                 "(setq org-export-with-latex t)"
                 "(setq org-export-with-fixed-width t)"
                 "(setq org-export-with-section-numbers nil) "
-                "(setq org-export-with-toc t)"
+                "(setq org-export-with-toc 3)"
                 "(setq org-export-with-tables t)"
                 "(org-html-export-to-html))' ",
                 shell = True,
@@ -313,15 +302,62 @@ class Render:
                     "#text-table-of-contents"
                 )[0]
                 content_table.name = "nav"
+                content_table.attrs["class"] = content_table.attrs.pop("id")
 
                 # Remove html file
                 p.unlink()
                 logging.debug(f"removed html: {p}")
 
-            res.setdefault(bhashp, {})["content"] = str(content)
+            # TODO: Need help.
+            res.setdefault(bhashp, {})["content"] = str(content).replace(
+                "<table", "<div class='table_container'><table"
+            ).replace("/table>", "/table></div>")
+
             res[bhashp]["content_table"] = str(content_table)
 
+            # wordcounter
+            ccount = Counter(content.text)
+            res[bhashp]["wordcount"] = str(
+                sum(ccount.values()) -
+                sum([ccount[i] for i in ccount if i in NWORD])
+            )
+
         return res
+
+    @staticmethod
+    def render_stylus(
+            path: PH = "./theme/nasyland/styles",
+            spath: PH = "./public/stylesheet"
+    ) -> None:
+        """Render stylus file to css."""
+        path = Path(path)
+        spath = Path(spath)
+        spath.mkdir(parents = True, exist_ok = True)
+
+        subprocess.Popen(
+            (
+                f"cd {path} && stylus -w style.styl "
+                f"-o ../../../{spath}/main.css"
+            ),
+            shell = True,
+        )
+
+    @staticmethod
+    def _others() -> Dict[str, str]:
+        """Get others."""
+        logging.info("Getting mathjax")
+        try:
+            content = bs4.BeautifulSoup(
+                req.get("https://www.mathjax.org/").content, "lxml"
+            )
+            mathjax = content.select("#gettingstarted .snippet code")[0].text
+        except req.exceptions.ProxyError:
+            mathjax = (
+                "<script src='https://cdnjs.cloudflare.com/ajax/libs"
+                "/mathjax/2.7.2/MathJax.js?"
+                "config=TeX-MML-AM_CHTML'></script>"
+            )
+        return {"mathjax": mathjax}
 
     @property
     def bfhash(self) -> Dict[str, str]:
@@ -334,19 +370,61 @@ class Render:
         return self.get_render_file(self.bfhash, self.hstore, self.force)
 
     @property
-    def oinfo(self) -> BI:
+    def bpaths(self) -> Set[str]:
+        """Get all of the blog paths."""
+        return set((str(blog["path"]) for blog in self.blogs.values()))
+
+    @property
+    def blinks(self) -> List[BL]:
+        """Get a blink for the blog renderer."""
+        blinks = set()
+        for blog in self.blogs.values():
+            date = pendulum.parse(blog["date"])
+            blinks.add(
+                BL(
+                    time = date.__str__(),
+                    timef = date.to_formatted_date_string(),
+                    url = f"/{str(blog['path'])}",
+                    title = str(blog["title"]),
+                    tags = tuple(blog["tags"]),
+                    categories = tuple(blog["categories"])
+                )
+            )
+        res = sorted(blinks, key = lambda x: x.time, reverse = True)
+        for i, e in enumerate(res):
+            for key, blog in self.blogs.items():
+                if e.title == blog["title"]:
+                    self.blogs[key]["prev"] = (res[i - 1].url if i else "")
+                    self.blogs[key]["next"] = (
+                        res[i + 1].url if i + 1 < len(res) else ""
+                    )
+
+        return res
+
+    @property
+    def ctags(self) -> Dict[str, int]:
+        """Get tags from blogs."""
+        ctags = dict()  # type: Dict[str, int]
+        for blog in self.blogs.values():
+            for tag in set(blog["tags"]):
+                ctags[tag] = ctags.setdefault(tag, 0) + 1
+
+        return ctags
+
+    @property
+    def _oinfo(self) -> BI:
         """Get information from org files."""
         return self.get_info_from_org(self.bfiles)
 
     @property
-    def hfiles(self) -> Set[Path]:
+    def _hfiles(self) -> Set[Path]:
         """Render org to html using emacs."""
         return self.org_to_html(self.bfiles)
 
     @property
-    def hinfo(self) -> BI:
+    def _hinfo(self) -> BI:
         """Get information from `HTML`."""
-        return self.get_html_content(self.hfiles)
+        return self.get_html_content(self._hfiles)
 
     def __init__(
             self,
@@ -358,13 +436,93 @@ class Render:
         self.force = force
         self.hstore = Path(hstore)
         self.bstore = Path(bstore)
+        self.jinjaenv = Environment(
+            loader = FileSystemLoader("./theme/nasyland/layout")
+        )
 
         self.blogs = {}  # type: BI
+        self.others = {}  # type: Dict[str, str]
         self.load_saved_blogs()
         self.update_blogs()
-        self.jinjaenv = Environment(
-            loader = FileSystemLoader("./theme/nasyland/")
-        )
+
+    def _to_html(self) -> None:
+        """Render the all blogs to htmls."""
+        # -------------
+        # move static
+        public = Path("public")
+        for dst in Path("theme/nasyland/").glob("*"):
+            if dst.stem in {"lib", "images"}:
+                if public.joinpath(dst.stem).exists():
+                    later = []
+                    for fs in public.joinpath(dst.stem).rglob("*"):
+                        if fs.is_dir():
+                            later.append(fs)
+                            continue
+                        fs.unlink()
+                    for dirs in later[::-1]:
+                        dirs.rmdir()
+                    public.joinpath(dst.stem).rmdir()
+                shutil.copytree(dst, public.joinpath(dst.stem))
+
+        # -------------
+        # render stylus
+        self.render_stylus()
+
+        # -------------
+        # render index
+        logging.info(f"Rendering index.html")
+
+        index = self.jinjaenv.get_template("index.html")
+        iconfig = {}  # type: Dict[str, Union[str, List[BL], Dict[str, int]]]
+        iconfig.update(self.others)
+        iconfig.update(CONFIG.blog._asdict())
+        iconfig["blinks"] = self.blinks
+        iconfig["cctags"] = self.ctags
+
+        htmls = index.render(iconfig)
+
+        os.makedirs(f"public/", exist_ok = True)
+        with open(f"public/index.html", "w") as f:
+            f.write(htmls)
+
+        # -------------
+        # render blogs
+        for key, blog in self.blogs.items():
+
+            logging.info(f"Rendering {blog['title']}")
+
+            template = self.jinjaenv.get_template("blog.html")
+
+            bconfig = {}
+            bconfig.update(CONFIG.blog._asdict())
+            bconfig.update(blog)
+            bconfig.update(self.others)
+            bconfig["blinks"] = self.blinks
+
+            htmls = template.render(bconfig)
+
+            os.makedirs(f"public/{blog['path']}", exist_ok = True)
+            with open(f"public/{blog['path']}/index.html", "w") as f:
+                f.write(htmls)
+
+        # -------------
+        # render tags
+        for ctag in self.ctags:
+            logging.info(f"Rendering tag: {ctag}")
+
+            template = self.jinjaenv.get_template("tag.html")
+
+            tconfig = {}  # type: Dict[str, Union[str, List[BL]]]
+            tconfig["ctag"] = ctag
+            tconfig.update(self.others)
+            tconfig.update(CONFIG.blog._asdict())
+            tconfig["blinks"] = self.blinks
+
+            htmls = template.render(tconfig)
+
+            os.makedirs(f"public/tags/{ctag}", exist_ok = True)
+            with open(f"public/tags/{ctag}/index.html", "w") as f:
+                f.write(htmls)
 
     def load_saved_blogs(self) -> None:
         """Load saved blogs' content."""
@@ -383,23 +541,20 @@ class Render:
 
         yaml.dump(self.blogs, bstore)
 
-    def to_html(self) -> None:
-        """Render the all blogs to htmls."""
-        for _, blog in self.blogs.items():
-            logging.info(f"Rendering {blog['title']}")
-            template = self.jinjaenv.get_template("layout.html")
-            htmls = template.render(blog, description = CONFIG.blog)
-            with open(f"public/{blog['title']}.html", "w") as f:
-                f.write(htmls)
-
     def update_blogs(self) -> None:
         """Update blogs content."""
-        oinfo = self.oinfo
-        hinfo = self.hinfo
+        oinfo = self._oinfo
+        hinfo = self._hinfo
         if oinfo.keys() == hinfo.keys():
             for k in oinfo:
                 self.blogs[k] = {**oinfo[k], **hinfo[k]}
+                date = pendulum.parse(oinfo[k]["date"])
+                self.blogs[k]["path"] = (
+                    f"{date.year}/{date.month}/"
+                    f"{date.day}/{oinfo[k]['title']}"
+                )
         self.save_blog()
+        self.others = self._others()
 
 
 if __name__ == '__main__':
@@ -409,4 +564,4 @@ if __name__ == '__main__':
         datefmt = "%x %X"
     )
     render = Render(True)
-    render.to_html()
+    render._to_html()

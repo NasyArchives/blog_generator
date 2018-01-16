@@ -1,0 +1,205 @@
+@import "variables"
+@import "basic"
+@import "html_bg"
+
+html
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+
+body
+    overflow: scroll;
+    padding: 0vh 1rem
+    margin: 0vh
+    min-height: 100vh
+    width: 100%
+    max-width: 44rem
+
+    background-color: $color-background
+
+    border-radius: 1rem
+    box-shadow:
+        4px 4px 10px invert($color-background),
+        -4px -4px 10px invert($color-background),
+        inset 4px 4px 10px invert($color-background),
+        inset -4px -4px 10px invert($color-background);
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: stretch;
+
+    .body-item
+        flex: none
+        padding: 0vh 2rem
+
+    #main
+        flex-grow: 1
+
+#header-nav
+    ul
+        display: flex;
+        flex-flow: row;
+
+#writing-container
+    > ul
+        display: flex;
+        flex-flow: column nowrap;
+
+    .blog_link_list, .blog_link_tags > ul
+        display: flex;
+        flex-flow: row wrap;
+
+    .blog_link_time
+        text-align: right;
+
+#toc
+    transition: none
+    z-index: 1
+    max-width: 16vw
+    min-width: 140px
+    min-height: 180px
+    overflow: auto;
+    position: fixed;
+    right: 2rem
+    top: 2rem
+    background-color: $color-background
+    border-radius: 1rem
+    box-shadow:
+        0 0 5px invert($color-background),
+        inset 0 0 5px invert($color-background)
+
+    @media (max-width: 768px){
+        right: 0
+        box-shadow: none
+        max-height: 25vh
+        display: none;
+    }
+    a
+        border-bottom: none
+    .text-table-of-contents
+        padding: 0 5px
+        li, a
+            width: 100%
+            display: inline-block;
+            text-align: right;
+            padding: 0
+            border-bottom: none
+            background-color: $color-background2
+        a
+            border-bottom: invert($color-background) dashed 1px
+        > ul > li
+            > a
+                color: $color-accent
+                &:hover
+                    text-shadow: 0 0 5px
+                    box-shadow:
+                        0 0 5px $color-accent
+                        inset 0 0 5px $color-accent
+            > ul > li
+                > a
+                    color: lighten(invert($color-background), 30%)
+                    font-size: smaller
+                    &:hover
+                        color: $color-accent
+                        text-shadow: 0 0 3px
+                        box-shadow:
+                            0 0 3px $color-accent
+                            inset 0 0 3px $color-accent
+                > ul > li
+                    > a
+                        color: invert($color-background)
+                        font-size: x-small
+                        &:hover
+                            color: $color-accent
+                            text-shadow: 0 0 2px
+                            box-shadow:
+                                0 0 3px $color-accent
+                                inset 0 0 3px $color-accent
+
+#menu-icon
+    position: fixed;
+    top: 0.7rem
+    right:2rem
+    border-bottom: none
+    z-index: 1
+    cursor: pointer;
+    @media (max-width: 768px){
+        right: 0.2rem
+    }
+
+#show_info
+    position: fixed;
+    right: 3.7rem
+    top: 0.7rem
+    z-index: 1
+    text-align: center;
+    padding: 0px 5px
+
+    transition: none
+
+    background: $color-background
+    border-radius: 1rem
+    box-shadow:
+        0 0 5px invert($color-background),
+        inset 0 0 5px invert($color-background)
+
+    span
+        transition: none
+
+    @media (max-width: 768px){
+        display: none
+    }
+
+#content
+    h1.title
+        display: none
+    .table_container
+        overflow: auto;
+    dt
+        font-weight: bold;
+    table
+        width: 100%;
+        font-size: 13px;
+        border-collapse: collapse;
+        text-align: left;
+    th
+        font-size: 14px;
+        font-weight: bold;
+        color: #ffa5a5;
+        border-bottom: 1px dashed #ccc;
+        padding: 8px 8px;
+    td
+        border-bottom: none;
+        padding: 9px 8px 0px 8px;
+
+
+.head_flex
+    display: flex
+    flex-flow: row nowrap;
+
+.copyright
+    color: $color-quiet
+    font-size: smaller;
+
+.description
+    font-size: smaller;
+
+.blog_link_tags
+    display: flex;
+    flex-flow: row;
+    &:before
+        content: "|"
+        padding: 0 3px
+
+.tag_a
+    padding: 0
+    &:before
+        content: "#"
+        position: relative;
+        left: 1px;
+        top: -1px
+
+.nlast_tag_a
+    &:after
+        content:","

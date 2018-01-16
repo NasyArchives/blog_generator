@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        {% include "head.html" %}
+    </head>
+
+    <body>
+
+        {% block hother %}
+        {% endblock %}
+
+        <header id="header" class="body-item">
+            {% block header %}
+            {% endblock %}
+        </header>
+
+        <main id="main" class="body-item">
+            {% block main %}
+            {% endblock %}
+
+        </main>
+
+        <footer id="footer" class="body-item">
+            {% block footer %}
+            {% endblock %}
+        </footer>
+
+        {% block fother %}
+        {% endblock %}
+
+        {% include "libs.html" %}
+    </body>
+
+</html>

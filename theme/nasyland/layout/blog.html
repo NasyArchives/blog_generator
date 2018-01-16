@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block hother %}
+<div id="head_other">
+    <a id="menu-icon">
+        <i class="fa fa-bars fa-lg"></i>
+    </a>
+    <div id="toc" class="float">
+        {% include "toc.html" %}
+    </div>
+    <div id="show_info">
+        {% if prev %}
+        {% set prevb =  prev.split('/')[-1] %}
+        <span id="i-prev" class="hidden">{{ prevb }}</span>
+        {% endif %}
+        {% if next %}
+        {% set nextb = next.split('/')[-1] %}
+        <span id="i-next" class="hidden">{{ nextb }}</span>
+        {% endif %}
+        <span id="i-top" class="hidden">back to top</span>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block header %}
+<h1>{{ title }}</h1>
+<div id="blog_meta">
+    <span class="author">{{ author }}</span>
+    <span class="time">
+        <time datetime="{{ date }}">{{ time }}</time>
+    </span>
+    <span>|</span>
+    {% set wc = wordcount | float %}
+    <span>There are {{ wordcount }} that may take {{ (wc/270)|round(1) }}mins to read.</span>
+</div>
+{% endblock %}
+
+
+{% block main %}
+<div>
+    {{ content }}
+</div>
+{% endblock %}
+
+{% block footer %}
+<div class="footer-left">
+    <p class="copyright">
+        {{ copyright }} | Total {{ wordcount }} Words.
+    </p>
+</div>
+<div class="footer-right">
+    <nav>
+        <ul>
+            <li>
+                <a href="/">Writing</a>
+            </li>
+            <li>
+                <a href="/about/">About</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+{% endblock %}
+
+{% block fother %}
+<!-- <div id="footer_other">
+    {% include "toc.html" %}
+</div> -->
+{% endblock %}

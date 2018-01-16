@@ -1,0 +1,36 @@
+<div id="writing-container">
+    <ul>
+        {% for blink in blinks %}
+        <li class="blog_link_list">
+            <div class="blog_link_time">
+                <p>
+                    <time datetime="{{ blink.time }}">{{ blink.timef }}</time>
+                </p>
+            </div>
+            <div class="blog_link">
+                <a href="{{ blink.url }}">
+                    {{ blink.title }}
+                </a>
+            </div>
+            <div class="blog_link_tags">
+                <ul class="fa fa-tag">
+                    {% for tag in blink.tags %}
+                    <li class="blog_link_tags_list">
+                        {% if tag != blink.tags|last %}
+                        <a href="/tags/{{ tag }}" class="tag_a nlast_tag_a">
+                            {{- tag -}}
+                        </a>
+                        {% endif %}
+                        {% if tag == blink.tags|last %}
+                        <a href="/tags/{{ tag }}" class="tag_a">
+                            {{- tag -}}
+                        </a>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>

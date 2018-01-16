@@ -35,13 +35,9 @@ Excited without bugs::
 
 Copyright © 2017 by Nasy. All Rights Reserved.
 """
-from config import CONFIG
+from utils.server import Server
 
+server = Server(True)
 
-def main() -> None:
-    """Yooo, here is the main function."""
-    pass
-
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    server.app.run("0.0.0.0", "1212", debug = True)

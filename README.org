@@ -29,4 +29,16 @@ Next step is rendering blog source file to ~HTML~ with emacs org-mode, which can
 
 And then, it is the time to read the information from ~HTML~, which contains the main part of our blog, that we can simply use the packages, ~bs4~ and ~lxml~, to parse the ~HTML~. At the same time, we have to edit it to fit out website.
 
-*** Last, but not the least, we need to merge the content, from the ~HTML~ files, and the information, from the ~.org~ files, into a ~Dict/json~ which is used to return to the ~server.py~ to do next step.
+*** Merge contents of ~.org~ and ~HTML~
+
+Last, but not the least, we need to merge the content, from the ~HTML~ files, and the information, from the ~.org~ files, into a ~Dict/json~ which is used to return to the ~server.py~ to do next step.
+
+** The server
+
+#+BEGIN_QUOTE
+Well, for some time, I wondered if it was needed a server, I had already rendered the ~.org~ files to ~HTML~, to response the requests real-time. Eventually, I found that the server was not used for the real-time responding, it was used to the live-reload the web pages, which made you debugging efficiently. -- Nasy
+#+END_QUOTE
+
+*** Reload the bowser.
+
+We use
