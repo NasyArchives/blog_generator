@@ -1,57 +1,146 @@
 @import "variables"
 @import "basic"
 @import "html_bg"
+@import "highlight"
+@import "gitalk"
 
 html
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
+    display: flex
+    justify-content: center
+    align-items: stretch
+    > div
+        position: relative;
 
 body
-    overflow: scroll;
-    padding: 0vh 1rem
+    overflow: scroll
+    padding: 0vh 2vw
     margin: 0vh
     min-height: 100vh
     width: 100%
-    max-width: 44rem
+    max-width: 50rem
 
     background-color: $color-background
 
     border-radius: 1rem
     box-shadow:
-        4px 4px 10px invert($color-background),
-        -4px -4px 10px invert($color-background),
-        inset 4px 4px 10px invert($color-background),
-        inset -4px -4px 10px invert($color-background);
+        4px 4px 10px invert($color-background3),
+        -4px -4px 10px invert($color-background3),
+        inset 4px 4px 10px invert($color-background3),
+        inset -4px -4px 10px invert($color-background3)
+    &:hover
+        box-shadow:
+            4px 4px 10px invert($color-background3),
+            -4px -4px 10px invert($color-background3),
+            inset 4px 4px 10px $color-background-1,
+            inset -4px -4px 10px $color-background-1,
+            5px 5px 10px $color-background-4,
+            -5px -5px 10px $color-background-4
 
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: space-between;
-    align-items: stretch;
+    display: flex
+    flex-flow: column nowrap
+    justify-content: space-between
+    align-items: stretch
+
 
     .body-item
         flex: none
-        padding: 0vh 2rem
+        padding: 0vh 2vw
 
     #main
         flex-grow: 1
 
+#up2top
+    display: flex
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+    cursor: n-resize
+    padding: 1px
+
+    border-radius: 1rem
+    &.page_up2top
+        position: fixed;
+        bottom: 20px
+        width: 2rem
+        right: 30vw - 22rem
+        box-shadow:
+            0 0 3px $color-lightest-transparen,
+            inset 0 0 3px $color-lightest-transparen
+        @media(max-width: 768px ){
+            right: 5vw
+        }
+
+#up2top, .icon
+    border-radius: 1rem
+    &:hover
+        svg
+            color: $color-accent
+            text-shadow: 0 0 5px $color-body-bg, 0 0 10px
+        box-shadow:
+            0 0 2px $color-head-transparen,
+            inset 0 0 2px $color-head-transparen,
+            1px 1px 3px $color-head-transparen,
+            -1px -1px 3px $color-head-transparen
+
+#head_ptn
+    li>a
+        padding: 1px
+
+#header
+    border-radius: 0.5rem
+    border-bottom: $color-head solid 1px
+    &:hover
+        box-shadow: 0 2px 5px $color-head
+
 #header-nav
     ul
-        display: flex;
-        flex-flow: row;
+        display: flex
+        flex-flow: row
+
+#blog_meta
+    display: flex
+    flex-flow: column nowrap
+    > div, p, ul
+        margin: 1px 2px
 
 #writing-container
     > ul
-        display: flex;
-        flex-flow: column nowrap;
+        display: flex
+        flex-flow: column nowrap
 
-    .blog_link_list, .blog_link_tags > ul
-        display: flex;
-        flex-flow: row wrap;
+#footer
+    border-radius: 0.5rem
+    border-top: $color-head solid 1px
+    &:hover
+        box-shadow: 0 -2px 5px $color-head
+        p
+            background-color: inherit;
 
-    .blog_link_time
-        text-align: right;
+.blog_link_list
+    transition-duration: 0.2s
+    display: flex
+    flex-flow: column nowrap
+    padding: 10px 5px
+    margin: 5px 0
+    background-color: $color-background2
+    border-radius: 1rem
+    border-color: $color-lightest
+    border-width: 4px
+    border-style: none none dashed none
+    box-shadow:
+        2px 2px 5px $color-lightest-transparen,
+        -2px -2px 5px $color-lightest-transparen,
+        inset 2px 2px 5px $color-lightest-transparen,
+        inset -2px -2px 5px $color-lightest-transparen
+    > div
+        margin: 5px 2px
+    &:hover
+        border-color: $color-head
+        border-style: none none solid none
+        box-shadow:
+            4px 4px 10px $color-head-transparen,
+            -4px -4px 10px $color-head-transparen
+
 
 #toc
     transition: none
@@ -59,8 +148,8 @@ body
     max-width: 16vw
     min-width: 140px
     min-height: 180px
-    overflow: auto;
-    position: fixed;
+    overflow: auto
+    position: fixed
     right: 2rem
     top: 2rem
     background-color: $color-background
@@ -73,7 +162,8 @@ body
         right: 0
         box-shadow: none
         max-height: 25vh
-        display: none;
+        display: none
+        background-color: $color-background3
     }
     a
         border-bottom: none
@@ -81,18 +171,18 @@ body
         padding: 0 5px
         li, a
             width: 100%
-            display: inline-block;
-            text-align: right;
+            display: inline-block
+            text-align: right
             padding: 0
             border-bottom: none
-            background-color: $color-background2
+            background-color: $color-background
         a
             border-bottom: invert($color-background) dashed 1px
         > ul > li
             > a
                 color: $color-accent
                 &:hover
-                    text-shadow: 0 0 5px
+                    text-shadow: 0 0 5px $color-body-bg, 0 0 10px
                     box-shadow:
                         0 0 5px $color-accent
                         inset 0 0 5px $color-accent
@@ -102,7 +192,7 @@ body
                     font-size: smaller
                     &:hover
                         color: $color-accent
-                        text-shadow: 0 0 3px
+                        text-shadow: 0 0 3px $color-body-bg, 0 0 6px
                         box-shadow:
                             0 0 3px $color-accent
                             inset 0 0 3px $color-accent
@@ -112,29 +202,31 @@ body
                         font-size: x-small
                         &:hover
                             color: $color-accent
-                            text-shadow: 0 0 2px
+                            text-shadow: 0 0 2px $color-body-bg, 0 0 5px
                             box-shadow:
                                 0 0 3px $color-accent
                                 inset 0 0 3px $color-accent
 
 #menu-icon
-    position: fixed;
+    position: fixed
     top: 0.7rem
     right:2rem
     border-bottom: none
     z-index: 1
-    cursor: pointer;
+    cursor: pointer
     @media (max-width: 768px){
         right: 0.2rem
     }
 
 #show_info
-    position: fixed;
+    position: fixed
     right: 3.7rem
     top: 0.7rem
     z-index: 1
-    text-align: center;
+    text-align: center
     padding: 0px 5px
+
+    display: flex
 
     transition: none
 
@@ -151,53 +243,109 @@ body
         display: none
     }
 
-#content
+// #content
+//     >*
+//         background: $color-background
+//         border-radius: 1rem
+//         padding: 0 3px
+//         box-shadow:
+//             1px 1px 3px $color-head-transparen,
+//             inset 2px 2px 5px invert($color-background-4),
+//             -1px -1px 3px $color-head-transparen,
+//             inset -2px -2px 5px invert($color-background-4)
+//         &:hover
+//             box-shadow:
+//                 2px 2px 5px $color-head-transparen,
+//                 inset 2px 2px 5px $color-lightest-transparen,
+//                 -2px -2px 5px $color-head-transparen,
+//                 inset -2px -2px 5px $color-lightest-transparen
+
     h1.title
         display: none
     .table_container
-        overflow: auto;
+        overflow: auto
     dt
-        font-weight: bold;
+        font-weight: bold
     table
-        width: 100%;
-        font-size: 13px;
-        border-collapse: collapse;
-        text-align: left;
+        width: 100%
+        font-size: 13px
+        border-collapse: collapse
+        text-align: left
     th
-        font-size: 14px;
-        font-weight: bold;
-        color: #ffa5a5;
-        border-bottom: 1px dashed #ccc;
-        padding: 8px 8px;
+        font-size: 14px
+        font-weight: bold
+        color: #ffa5a5
+        border-bottom: 1px dashed #ccc
+        padding: 8px 8px
     td
-        border-bottom: none;
-        padding: 9px 8px 0px 8px;
+        border-bottom: none
+        padding: 9px 8px 0px 8px
 
 
 .head_flex
     display: flex
-    flex-flow: row nowrap;
+    flex-flow: row nowrap
 
 .copyright
     color: $color-quiet
-    font-size: smaller;
+    font-size: smaller
 
 .description
-    font-size: smaller;
+    font-size: smaller
+
+.blog_link
+    a
+        color: $color-lightest
+        font-size: $font-h2-size
+        border: none
+        &:hover
+            text-shadow: 0 0 5px $color-body-bg, 0 0 10px
+            border: none
+            color: $color-head
 
 .blog_link_tags
-    display: flex;
-    flex-flow: row;
-    &:before
-        content: "|"
-        padding: 0 3px
+    display: flex
+    flex-flow: row
+    align-items: center
+    > ul
+        display: flex
+        flex-flow: row wrap
+        align-items: baseline
+
+.blog_link_time
+    display: flex
+    flex-flow: row nowrap;
+    align-items: center
+    p
+        padding: 0 7px
+        time
+            padding: 0 5px
+
+.author
+    display: flex
+    flex-flow: row
+    align-items: center
+    p
+        padding: 0 10px
+
+
+.blog_link_summary_list
+    display: flex
+    flex-flow: row
+    align-items: baseline
+    p
+        padding: 0 5px
+        font-size: $font-size-small
+
+.blog_link_tags_list
+    padding: 5px
 
 .tag_a
     padding: 0
     &:before
         content: "#"
-        position: relative;
-        left: 1px;
+        position: relative
+        left: 1px
         top: -1px
 
 .nlast_tag_a

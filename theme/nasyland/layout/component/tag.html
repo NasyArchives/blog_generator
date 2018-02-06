@@ -1,0 +1,19 @@
+<div class="blog_link_tags">
+    <i class="fas fa-tags fa-sm"></i>
+    <ul>
+        {% for tag in blink.tags %}
+        <li class="blog_link_tags_list">
+            {% if tag != blink.tags|last %}
+            <a href="/tags/{{ tag }}" class="tag_a nlast_tag_a">
+                {{- tag -}}
+            </a>
+            {% endif %}
+            {% if tag == blink.tags|last %}
+            <a href="/tags/{{ tag }}" class="tag_a">
+                {{- tag -}}
+            </a>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>

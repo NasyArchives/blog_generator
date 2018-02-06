@@ -1,0 +1,27 @@
+<ul id="head_links" class="head_flex">
+    <li>
+        <a href="/">Home</a>
+    </li>
+</ul>
+<ul id="head_ptn" class="head_flex">
+    {% if prev %}
+    <li onmouseover="showe('#i-prev');" onmouseout="fade_out('#i-prev');">
+        <a class="prev_blog icon" href="{{ prev }}">
+            <i class="icon-prev fas fa-chevron-left">
+            </i>
+        </a>
+    </li>
+    {% endif %}
+    <li onmouseover="showe('#i-top');" onmouseout="fade_out('#i-top')">
+        {% include "component/up2top.html" %}
+    </li>
+    {% if next %}
+    <li onmouseover="showe('#i-next')" onmouseout="fade_out('#i-next')">
+        <a class="next_blog icon" href="{{ next }}">
+            <i class="icon-next fas fa-chevron-right">
+            </i>
+        </a>
+    </li>
+    {% endif %}
+</ul>
+{{ content_table }}

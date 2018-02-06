@@ -2,14 +2,12 @@
 <html>
 
     <head>
-        {% include "head.html" %}
+        {% include "component/head.html" %}
     </head>
 
     <body>
-
         {% block hother %}
         {% endblock %}
-
         <header id="header" class="body-item">
             {% block header %}
             {% endblock %}
@@ -27,9 +25,13 @@
         </footer>
 
         {% block fother %}
+            {% include "component/up2top.html" %}
+            <script defer src="/lib/javascript/page_u2t.js"></script>
         {% endblock %}
 
-        {% include "libs.html" %}
+        {% block libs %}
+            {% include "component/libs.html" %}
+        {% endblock %}
     </body>
 
 </html>

@@ -16,7 +16,16 @@
 <link rel="icon" type="image/png" href="/images/android-chrome-192x192.png" sizes="192x192">
 <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 
-<link rel="stylesheet" href="/stylesheet/main.css">
-<link rel="stylesheet" href="/lib/font-awesome-4.7.0/css/font-awesome.min.css">
+<link type="text/css" href="/stylesheet/main.css" rel="stylesheet">
 
 <title>{{ title }}</title>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{- google_ana -}}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '{{- google_ana -}}');
+</script>

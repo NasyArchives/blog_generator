@@ -2,15 +2,18 @@
 
 {% block header %}
 <h1>{{ title }}</h1>
-<p class="description">
-    {{ description }}
-</p>
 {% include "component/nav.html" %}
 {% endblock %}
 
+{% set blinks_o = blinks %}
+
 {% block main %}
 <div id="container">
-    {% include "component/writing.html" %}
+    {% set blinkss = blinks_o|archives_filter(apath) %}
+    {% for year, blinks in blinkss %}
+        <h2>{{ year }}</h2>
+        {% include "component/writing.html" %}
+    {% endfor %}
 </div>
 {% endblock %}
 

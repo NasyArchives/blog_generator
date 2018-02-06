@@ -1,0 +1,36 @@
+<div id="writing-container">
+    <ul>
+        {% for blink in blinks %}
+        <li class="blog_link_list">
+            <div class="blog_link">
+                <a href="{{ blink.url }}">
+                    {{- blink.title -}}
+                </a>
+            </div>
+            <div class="author">
+                <i class="fas fa-pencil-alt"></i>
+                <p>{{ blink.author }}</p>
+            </div>
+            <div class="blog_link_time">
+                <i class="far fa-calendar-alt"></i>
+                <p>
+                    <time datetime="{{ blink.time }}"></time>
+                </p>
+            </div>
+            <div class="blog_link_summary">
+                <i class="fas fa-quote-left"></i>
+                {% if blink.summary %}
+                    {{ blink.summary }}
+                {% else %}
+                    <P>
+                        no summary
+                    </P>
+                {% endif %}
+            </div>
+            {% if blink.tags %}
+                {% include "component/tag.html" %}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>

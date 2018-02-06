@@ -49,17 +49,19 @@ import shutil
 import subprocess
 from collections import Counter
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, List, Optional, Set, Tuple
 
 import bs4
+import htmlmin
 import pendulum
 import requests as req
 from jinja2 import Environment, FileSystemLoader
 from ruamel.yaml import YAML
 
-from utils import BI, BL, CONFIG, PH, bhash
+from .summary import Summary
+from .utils import BI, BL, CFW, CONFIG, PH, bhash
 
-assert Union
+assert CFW
 
 yaml = YAML(typ = "safe")
 NWORD = set((
@@ -168,7 +170,10 @@ class Render:
         STEP TWO.
         """
         res = {}  # type: BI
-        NEEDED = {"date", "author", "tags", "categories", "title", "update"}
+        NEEDED = {
+            "date", "author", "tags", "categories", "title", "update",
+            "language"
+        }
         for path in paths:
             logging.info(f"reading from org: {path}")
             with path.open() as f:
@@ -181,6 +186,7 @@ class Render:
                     pendulum.now().day
                 ).ctime()
                 res[bhashp]["title"] = path.stem
+                res[bhashp]["language"] = "chinese"
                 for ii in {"tags", "categories"}:
                     res[bhashp][ii] = set([f"no {ii}"])
                 for line in f:
@@ -190,10 +196,11 @@ class Render:
                     if line[0] == "*" or n > 1:
                         break
 
-                    key, value = re.split(
+                    key, *values = re.split(
                         r":\s*",
                         line.replace("\n", "").replace("#+", "")
                     )
+                    value = ":".join(values)
                     key = key.lower()
                     if key in {"date", "update"}:
                         if value:
@@ -207,11 +214,13 @@ class Render:
                                 pendulum.now().day
                             ).ctime()
                     if key in {"tags", "categories"}:
-                        value = set(re.split(r",\s*", value))
-                        res[bhashp][key] = value
+                        svalue = set(re.split(r",\s*", value))
+                        res[bhashp][key] = svalue
                         continue
                     if key in NEEDED:
                         res[bhashp][key] = value
+                        if key == "language":
+                            res[bhashp][key] = "chinese" if value == "cn" else "english"
                 res[bhashp].setdefault("update", res[bhashp]["date"])
 
         return res
@@ -336,11 +345,36 @@ class Render:
 
         subprocess.Popen(
             (
-                f"cd {path} && stylus -w style.styl "
+                f"cd {path} && stylus -c style.styl "
+                f"-o ../../../{spath}/main.css"
+            ),
+            shell = True,
+        ).wait()
+        subprocess.Popen(
+            (
+                f"cd {path} && stylus -w -c style.styl "
                 f"-o ../../../{spath}/main.css"
             ),
             shell = True,
         )
+
+    @staticmethod
+    def move_static() -> None:
+        """Move static file to public."""
+        public = Path("public")
+        for dst in Path("theme/nasyland/").glob("*"):
+            if dst.stem in {"lib", "images"}:
+                if public.joinpath(dst.stem).exists():
+                    later = []
+                    for fs in public.joinpath(dst.stem).rglob("*"):
+                        if fs.is_dir():
+                            later.append(fs)
+                            continue
+                        fs.unlink()
+                    for dirs in later[::-1]:
+                        dirs.rmdir()
+                    public.joinpath(dst.stem).rmdir()
+                shutil.copytree(dst, public.joinpath(dst.stem))
 
     @staticmethod
     def _others() -> Dict[str, str]:
@@ -358,6 +392,42 @@ class Render:
                 "config=TeX-MML-AM_CHTML'></script>"
             )
         return {"mathjax": mathjax}
+
+    @staticmethod
+    def _tags_filter(blinks: List[BL], ctag: str) -> List[BL]:
+        """Filter tags."""
+        res = []
+        for blink in blinks:
+            if ctag in blink.tags:
+                res.append(blink)
+        return res
+
+    @staticmethod
+    def _archives_filter(blinks: List[BL],
+                         apath: str) -> List[Tuple[str, List[BL]]]:
+        """Filter tags."""
+        bls = []
+        res = []
+        if apath:
+            for blink in blinks:
+                if apath in blink.url:
+                    bls.append(blink)
+        else:
+            bls = blinks.copy()
+        bls.sort(key = lambda x: x.url.split("/")[1])
+        nbls = []
+        old_year = bls[0].url.split("/")[1]
+        for bl in bls:
+            year = bl.url.split("/")[1]
+            if year == old_year:
+                nbls.append(bl)
+            else:
+                res.append((old_year, nbls))
+                old_year = year
+                nbls = [bl]
+        res.append((old_year, nbls))
+        res.reverse()
+        return res
 
     @property
     def bfhash(self) -> Dict[str, str]:
@@ -383,9 +453,12 @@ class Render:
             blinks.add(
                 BL(
                     time = date.__str__(),
-                    timef = date.to_formatted_date_string(),
+                    summary = Summary(
+                        str(blog["content"]), str(blog["language"])
+                    ).get(),
                     url = f"/{str(blog['path'])}",
                     title = str(blog["title"]),
+                    author = str(blog["author"]),
                     tags = tuple(blog["tags"]),
                     categories = tuple(blog["categories"])
                 )
@@ -410,6 +483,18 @@ class Render:
                 ctags[tag] = ctags.setdefault(tag, 0) + 1
 
         return ctags
+
+    @property
+    def bapaths(self) -> Set[str]:
+        """Get all of the blog archives paths."""
+        bapath = set()  # type: Set[str]
+        bapath.add("")
+        for path in self.bpaths:
+            year, month, day, _ = path.split("/")
+            bapath.add(year)
+            bapath.add(f"{year}/{month}")
+            bapath.add(f"{year}/{month}/{day}")
+        return bapath
 
     @property
     def _oinfo(self) -> BI:
@@ -439,6 +524,8 @@ class Render:
         self.jinjaenv = Environment(
             loader = FileSystemLoader("./theme/nasyland/layout")
         )
+        self.jinjaenv.filters["tags_filter"] = self._tags_filter
+        self.jinjaenv.filters["archives_filter"] = self._archives_filter
 
         self.blogs = {}  # type: BI
         self.others = {}  # type: Dict[str, str]
@@ -448,21 +535,8 @@ class Render:
     def _to_html(self) -> None:
         """Render the all blogs to htmls."""
         # -------------
-        # move static
-        public = Path("public")
-        for dst in Path("theme/nasyland/").glob("*"):
-            if dst.stem in {"lib", "images"}:
-                if public.joinpath(dst.stem).exists():
-                    later = []
-                    for fs in public.joinpath(dst.stem).rglob("*"):
-                        if fs.is_dir():
-                            later.append(fs)
-                            continue
-                        fs.unlink()
-                    for dirs in later[::-1]:
-                        dirs.rmdir()
-                    public.joinpath(dst.stem).rmdir()
-                shutil.copytree(dst, public.joinpath(dst.stem))
+        # move statics
+        self.move_static()
 
         # -------------
         # render stylus
@@ -473,13 +547,13 @@ class Render:
         logging.info(f"Rendering index.html")
 
         index = self.jinjaenv.get_template("index.html")
-        iconfig = {}  # type: Dict[str, Union[str, List[BL], Dict[str, int]]]
+        iconfig = {}  # type: CFW
         iconfig.update(self.others)
         iconfig.update(CONFIG.blog._asdict())
         iconfig["blinks"] = self.blinks
         iconfig["cctags"] = self.ctags
 
-        htmls = index.render(iconfig)
+        htmls = htmlmin.minify(index.render(iconfig))
 
         os.makedirs(f"public/", exist_ok = True)
         with open(f"public/index.html", "w") as f:
@@ -493,13 +567,13 @@ class Render:
 
             template = self.jinjaenv.get_template("blog.html")
 
-            bconfig = {}
+            bconfig = {}  # type: CFW
             bconfig.update(CONFIG.blog._asdict())
             bconfig.update(blog)
             bconfig.update(self.others)
             bconfig["blinks"] = self.blinks
 
-            htmls = template.render(bconfig)
+            htmls = htmlmin.minify(template.render(bconfig))
 
             os.makedirs(f"public/{blog['path']}", exist_ok = True)
             with open(f"public/{blog['path']}/index.html", "w") as f:
@@ -512,16 +586,35 @@ class Render:
 
             template = self.jinjaenv.get_template("tag.html")
 
-            tconfig = {}  # type: Dict[str, Union[str, List[BL]]]
+            tconfig = {}  # type: CFW
             tconfig["ctag"] = ctag
             tconfig.update(self.others)
             tconfig.update(CONFIG.blog._asdict())
             tconfig["blinks"] = self.blinks
 
-            htmls = template.render(tconfig)
+            htmls = htmlmin.minify(template.render(tconfig))
 
             os.makedirs(f"public/tags/{ctag}", exist_ok = True)
             with open(f"public/tags/{ctag}/index.html", "w") as f:
+                f.write(htmls)
+
+        # -------------
+        # render archives
+        for apath in self.bapaths:
+            logging.info(f"Rendering archives: {apath}")
+
+            template = self.jinjaenv.get_template("archive.html")
+
+            aconfig = {}  # type: CFW
+            aconfig["apath"] = apath
+            aconfig.update(self.others)
+            aconfig.update(CONFIG.blog._asdict())
+            aconfig["blinks"] = self.blinks
+
+            htmls = htmlmin.minify(template.render(aconfig))
+
+            os.makedirs(f"public/archives/{apath}", exist_ok = True)
+            with open(f"public/archives/{apath}/index.html", "w") as f:
                 f.write(htmls)
 
     def load_saved_blogs(self) -> None:

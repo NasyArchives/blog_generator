@@ -47,6 +47,7 @@ config = dict(
     bpath = "blog",
     fsuffix = "org",
     copyright = f"Copyright © {pendulum.now().year} Nasy",
+    google_ana = "UA-102577027-1",
 
     # Hash setting
     method = "xxhash",

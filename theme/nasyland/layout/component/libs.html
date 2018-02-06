@@ -1,0 +1,62 @@
+<!-- highlight -->
+<script src="/lib/javascript/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<!-- <script src="/lib/javascript/highlight-line-number.js"></script>
+<script>hljs.initLineNumbersOnLoad();</script> -->
+
+<!-- fontawesome -->
+<script async defer src="/lib/javascript/fa-solid.min.js"></script>
+<script async defer src="/lib/javascript/fa-regular.min.js"></script>
+<script async defer src="/lib/javascript/fontawesome.min.js"></script>
+
+<!-- momentjs -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+
+<!-- Mines -->
+<script defer src="/lib/javascript/main.js"></script>
+
+<!-- MathJax -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    displayAlign: "center",
+    displayIndent: "0em",
+    "HTML-CSS": { scale: 100, linebreaks: { automatic: "false" }, webFont: "TeX" },
+    SVG: { scale: 100, linebreaks: { automatic: "false" }, font      : "TeX" },
+    NativeMML: { scale: 100 },
+    TeX: {
+        equationNumbers: {
+            autoNumber: "AMS"
+        },
+        MultLineWidth: "85%",
+        TagSide: "right",
+        TagIndent: ".8em"
+    },
+    tex2jax: { inlineMath: [
+            ['$', '$'],
+            ['\\(', '\\)']
+        ] }
+    });
+
+</script>
+
+{{ mathjax }}
+
+<!-- comments -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script> -->
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: '434498d156d6042c22a4',
+  clientSecret: '11c8c6cce2e0c5e23749c0602841c855293476b7',
+  repo: 'nasyxx.github.io',
+  owner: 'nasyxx',
+  admin: ['nasyxx'],
+  id: "{{- title -}}",
+  labels: ['comment'],
+  createIssueManually: true,
+  enableHotKey: true,
+  perPage:10,
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+</script>

@@ -2,51 +2,15 @@
 
 {% block header %}
 <h1>{{ title }}</h1>
-{% include "nav.html" %}
+{% include "component/nav.html" %}
 {% endblock %}
 
 {% block main %}
 <div id="container">
-    <div id="writing-container">
-        {% if ctag %}
-        <ul>
-            {% for blink in blinks %}
-            {% if ctag in blink.tags %}
-            <li class="blog_link_list">
-                <div class="blog_link_time">
-                    <p>
-                        <time datetime="{{ blink.time }}">{{ blink.timef }}</time>
-                    </p>
-                </div>
-                <div class="blog_link">
-                    <a href="{{ blink.url }}">
-                        {{ blink.title }}
-                    </a>
-                </div>
-                <div class="blog_link_tags">
-                    <ul class="fa fa-tag">
-                        {% for tag in blink.tags %}
-                        <li class="blog_link_tags_list">
-                            {% if tag != blink.tags|last %}
-                            <a href="/tags/{{ tag }}" class="tag_a nlast_tag_a">
-                                {{- tag -}}
-                            </a>
-                            {% endif %}
-                            {% if tag == blink.tags|last %}
-                            <a href="/tags/{{ tag }}" class="tag_a">
-                                {{- tag -}}
-                            </a>
-                            {% endif %}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </li>
-            {% endif %}
-            {% endfor %}
-        </ul>
-        {% endif %}
-    </div>
+    {% if ctag %}
+        {% set blinks = blinks|tags_filter(ctag) %}
+        {% include "component/writing.html" %}
+    {% endif %}
 </div>
 {% endblock %}
 

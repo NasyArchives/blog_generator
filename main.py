@@ -35,7 +35,7 @@ Excited without bugs::
 
 Copyright © 2017 by Nasy. All Rights Reserved.
 """
-from utils.server import Server
+from utils import Server
 
 server = Server(True)
 

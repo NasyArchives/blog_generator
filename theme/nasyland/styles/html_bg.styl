@@ -1,24 +1,10 @@
 @import "variables"
 
 html
+    z-index: -1
     background-attachment: fixed;
     background-color: $color-body-bg;
-    background-image: radial-gradient(white,
-            rgba(255,255,255,.2) 2px,
-            transparent 40px
-        ),
-        radial-gradient(white,
-            rgba(255,255,255,.15) 1px,
-            transparent 30px
-        ),
-        radial-gradient(white,
-            rgba(255,255,255,.1) 2px,
-            transparent 40px
-        ),
-        radial-gradient(rgba(255,255,255,.4),
-            rgba(255,255,255,.1) 2px,
-            transparent 30px
-        ),
+    background-image:
         repeating-linear-gradient(45deg,
             transparent 5px,
             $color-background-1 5px,
@@ -68,6 +54,28 @@ html
             $color-background-2 140px,
             $color-background-1 140px,
             $color-background-1 160px
-        );
-    background-size: 350px 350px, 250px 250px, 150px 150px, 50px 50px;
-    background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+        ),
+        url("/images/star.gif");
+    // background-size: 350px 350px, 250px 250px, 150px 120px, 70px 70px;
+    // background-position: 0 0, 40px 70px, 130px 190px, 70px 120px;
+
+// body:before
+//     box-shadow:
+//         4px 4px 10px invert($color-background3),
+//         -4px -4px 10px invert($color-background3),
+//         inset 4px 4px 10px invert($color-background3),
+//         inset -4px -4px 10px invert($color-background3)
+//     width: 100vw
+//     height: 100vh
+//     position: fixed
+//     z-index: -2
+//     left: 0
+//     top: 0
+//     content: ""
+//     background-image:
+//         radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+//         radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+//         radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
+//         radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
+//     background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px;
+//     background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;

@@ -2,11 +2,11 @@
 
 {% block hother %}
 <div id="head_other">
-    <a id="menu-icon">
-        <i class="fa fa-bars fa-lg"></i>
-    </a>
+    <div id="menu-icon" onclick="toggle_sf('#toc')">
+        <i class="fas fa-bars fa-lg"></i>
+    </div>
     <div id="toc" class="float">
-        {% include "toc.html" %}
+        {% include "component/toc.html" %}
     </div>
     <div id="show_info">
         {% if prev %}
@@ -26,21 +26,31 @@
 {% block header %}
 <h1>{{ title }}</h1>
 <div id="blog_meta">
-    <span class="author">{{ author }}</span>
-    <span class="time">
-        <time datetime="{{ date }}">{{ time }}</time>
-    </span>
-    <span>|</span>
+    <div class="author"><i class="fas fa-pencil-alt"></i><p>{{ author }}</p></div>
+    <div class="blog_link_time">
+        <i class="far fa-calendar-alt"></i>
+        <p>
+            <time datetime="{{ date }}"></time>
+        </p>
+    </div>
+    {% for blink in blinks %}
+        {% if blink.title == title %}
+        {% include "component/tag.html" %}
+        {% endif %}
+    {% endfor %}
     {% set wc = wordcount | float %}
-    <span>There are {{ wordcount }} that may take {{ (wc/270)|round(1) }}mins to read.</span>
+    <div><p>There are {{ wordcount }} words that may take {{ (wc/270)|round(1) }} mins to read.</p></div>
 </div>
 {% endblock %}
 
 
 {% block main %}
-<div>
     {{ content }}
-</div>
+    <div>
+        <div id="gitalk-container">
+
+        </div>
+    </div>
 {% endblock %}
 
 {% block footer %}
@@ -53,7 +63,7 @@
     <nav>
         <ul>
             <li>
-                <a href="/">Writing</a>
+                <a href="/">Home</a>
             </li>
             <li>
                 <a href="/about/">About</a>
@@ -63,8 +73,7 @@
 </div>
 {% endblock %}
 
-{% block fother %}
-<!-- <div id="footer_other">
-    {% include "toc.html" %}
-</div> -->
-{% endblock %}
+{% block libs %}
+    {{ super() }}
+    <script>gitalk.render('gitalk-container')</script>
+{% endblock%}

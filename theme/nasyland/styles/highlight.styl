@@ -1,0 +1,122 @@
+/* Tomorrow Night Eighties Theme */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+
+code
+    font-family: $font-family-mono
+    font-size: smaller
+    pre
+        font-family: $font-family-mono
+    span
+        font-family: $font-family-mono
+    div
+        font-family: $font-family-mono
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote
+  color: #999999;
+
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion
+  color: #f2777a;
+
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link
+  color: #f99157;
+
+
+/* Tomorrow Yellow */
+.hljs-attribute
+  color: #ffcc66;
+
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition
+  color: #99cc99;
+
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section
+  color: #6699cc;
+
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag
+  color: #cc99cc;
+
+
+.hljs
+  display: block;
+  overflow-x: auto;
+  background: $color-background2;
+  color: #cccccc;
+  padding: 1rem 0.5em;
+  border-radius: 0.7rem
+  box-shadow:
+      0 0 5px $color-head-transparen,
+      inset 0 0 5px $color-head-transparen
+  &:hover
+      box-shadow:
+          0 0 10px $color-icon,
+          inset 0 0 10px $color-icon,
+          1px 1px 10px $color-icon,
+          -1px -1px 10px $color-icon
+
+
+.hljs-emphasis
+  font-style: italic;
+
+
+.hljs-strong
+  font-weight: bold;
+
+td.hljs-ln-numbers {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    text-align: right;
+    color: #ccc;
+    border-right: 1px solid #CCC;
+    vertical-align: top;
+    padding-right: 5px;
+    flex-basis: 2rem
+    justify-content:flex-end;
+
+    /* your custom style here */
+}
+
+/* for block of code */
+td.hljs-ln-code
+    padding-left: 10px;
+    flex-grow: 1
+
+.hljs-ln tr
+    display: flex
+    > td
+        display: flex

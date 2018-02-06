@@ -3,3 +3,4 @@
 .stores
 __pycache__
 public
+blog/*

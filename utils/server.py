@@ -45,8 +45,9 @@ import os
 from urllib.parse import quote
 
 from sanic import Sanic
+from sanic_compress import Compress
 
-from utils.render import Render
+from .render import Render
 
 
 class Server:
@@ -55,16 +56,28 @@ class Server:
     def _add_bstatic(self) -> None:
         """Add blogs' html static files."""
         self.app.static("/", "./public/index.html")
-        for path in self.render.bpaths:
+        for path in self.app.render.bpaths:
             upath = quote(path)
+
             print(path, upath, sep = " --> ")
+
             self.app.static(upath, f"./public/{path}")
             self.app.static(upath, f"./public/{path}/index.html")
-
             self.app.static(f"{upath}.html", f"public/{path}")
             self.app.static(f"{upath}.html", f"public/{path}/index.html")
 
-        for tag in self.render.ctags:
+        for apath in self.app.render.bapaths:
+            uapath = quote("archives/" + apath)
+            print(apath, uapath, sep = " --> ")
+            self.app.static(uapath, f"./public/archives/{apath}")
+            if apath:
+                self.app.static(
+                    uapath, f"./public/archives/{apath}/index.html"
+                )
+            else:
+                self.app.static(uapath, f"./public/archives/index.html")
+
+        for tag in self.app.render.ctags:
             upath = quote(f"/tags/{tag}")
             print(tag, upath, sep = " --> ")
             self.app.static(upath, f"./public/tags/{tag}")
@@ -73,8 +86,9 @@ class Server:
     def __init__(self, rforce: bool = False) -> None:
         """Initilizing the server."""
         self.app = Sanic("Nasy Land")
-        self.render = Render(force = rforce)
-        self.render._to_html()
+        Compress(self.app)
+        self.app.render = Render(force = rforce)
+        self.app.render._to_html()
 
         self._add_bstatic()
 
