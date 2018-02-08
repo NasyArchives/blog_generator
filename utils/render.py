@@ -361,6 +361,10 @@ class Render:
     @staticmethod
     def move_static() -> None:
         """Move static file to public."""
+        if CONFIG.blog.cname:
+            os.makedirs(f"public/", exist_ok = True)
+            with open("public/CNAME", "w") as f:
+                f.write(CONFIG.blog.cname)
         public = Path("public")
         for dst in Path("theme/nasyland/").glob("*"):
             if dst.stem in {"lib", "images"}:

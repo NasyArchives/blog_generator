@@ -72,6 +72,7 @@ CF_Blog = NamedTuple(
         ("suffix", str),
         ("copyright", str),
         ("google_ana", str),
+        ("cname", str),
     ]
 )
 CF_Hash = NamedTuple("CF_Hash", [
@@ -93,7 +94,8 @@ CONFIG = CF(
         copyright = config.get(
             "copyright", f"Copyright © {pendulum.now().year} Nasy"
         ),
-        google_ana = config.get("google_ana")
+        google_ana = config.get("google_ana"),
+        cname = config.get("cname"),
     ),
     hash = CF_Hash(
         method = config.get("method", "xxhash"),

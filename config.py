@@ -48,6 +48,7 @@ config = dict(
     fsuffix = "org",
     copyright = f"Copyright © {pendulum.now().year} Nasy",
     google_ana = "UA-102577027-1",
+    cname = "new.nasy.moe",
 
     # Hash setting
     method = "xxhash",
