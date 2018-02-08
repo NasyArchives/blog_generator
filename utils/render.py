@@ -58,7 +58,6 @@ import requests as req
 from jinja2 import Environment, FileSystemLoader
 from ruamel.yaml import YAML
 
-from .summary import Summary
 from .utils import BI, BL, CFW, CONFIG, PH, bhash
 
 assert CFW
@@ -172,7 +171,7 @@ class Render:
         res = {}  # type: BI
         NEEDED = {
             "date", "author", "tags", "categories", "title", "update",
-            "language"
+            "language", "summary"
         }
         for path in paths:
             logging.info(f"reading from org: {path}")
@@ -187,6 +186,7 @@ class Render:
                 ).ctime()
                 res[bhashp]["title"] = path.stem
                 res[bhashp]["language"] = "chinese"
+                res[bhashp]["summary"] = ""
                 for ii in {"tags", "categories"}:
                     res[bhashp][ii] = set([f"no {ii}"])
                 for line in f:
@@ -453,9 +453,7 @@ class Render:
             blinks.add(
                 BL(
                     time = date.__str__(),
-                    summary = Summary(
-                        str(blog["content"]), str(blog["language"])
-                    ).get(),
+                    summary = str(blog["summary"]),
                     url = f"/{str(blog['path'])}",
                     title = str(blog["title"]),
                     author = str(blog["author"]),

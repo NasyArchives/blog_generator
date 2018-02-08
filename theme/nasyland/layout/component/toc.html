@@ -5,20 +5,20 @@
 </ul>
 <ul id="head_ptn" class="head_flex">
     {% if prev %}
-    <li onmouseover="showe('#i-prev');" onmouseout="fade_out('#i-prev');">
-        <a class="prev_blog icon" href="{{ prev }}">
-            <i class="icon-prev fas fa-chevron-left">
+    <li onmouseover="showe('#i-prev');" onmouseout="hide('#i-prev');">
+        <a class="prev_blog icon" href="{{ prev }}" onmouseover="showe('#i-prev');" onmouseout="hide('#i-prev');">
+            <i class="icon-prev fas fa-chevron-left" onmouseover="showe('#i-prev');" onmouseout="hide('#i-prev');">
             </i>
         </a>
     </li>
     {% endif %}
-    <li onmouseover="showe('#i-top');" onmouseout="fade_out('#i-top')">
+    <li onmouseover="showe('#i-top');" onmouseout="hide('#i-top')">
         {% include "component/up2top.html" %}
     </li>
     {% if next %}
-    <li onmouseover="showe('#i-next')" onmouseout="fade_out('#i-next')">
-        <a class="next_blog icon" href="{{ next }}">
-            <i class="icon-next fas fa-chevron-right">
+    <li onmouseover="showe('#i-next')" onmouseout="hide('#i-next')">
+        <a class="next_blog icon" href="{{ next }}" onmouseover="showe('#i-next')" onmouseout="hide('#i-next')">
+            <i class="icon-next fas fa-chevron-right" onmouseover="showe('#i-next')" onmouseout="hide('#i-next')">
             </i>
         </a>
     </li>

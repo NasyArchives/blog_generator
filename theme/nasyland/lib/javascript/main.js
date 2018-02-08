@@ -6,26 +6,45 @@
 /*
  * Back to top smoothly
  */
-function scroll_to(element, to, duration) {
-    if (duration < 0) return;
+function scroll_to(element, to) {
     var difference = to - element.scrollTop;
-    var perTick = difference / duration * 2;
+
+    if (Math.abs(difference) < 10) {
+        element.scrollTop = to;
+        return;
+    }
+
+
+    var ratio = 5;
+    element.scrollTop = (element.scrollTop * ratio + to) / (ratio + 1);
 
     setTimeout(function () {
-        element.scrollTop = element.scrollTop + perTick;
-        scroll_to(element, to, duration - 2);
+        scroll_to(element, to);
     }, 10);
 }
+// function scroll_to(element, to, duration) {
+//     if (duration < 0) return;
+//     var difference = to - element.scrollTop;
+//     var perTick = difference / duration * 2;
+//
+//     setTimeout(function () {
+//         element.scrollTop = element.scrollTop + perTick;
+//         scroll_to(element, to, duration - 2);
+//     }, 10);
+// }
 document.querySelectorAll('#up2top').forEach(function (e) {
     e.onclick = function () {
         var high = document.body.scrollTop
         if (high / 100 > 100) {
-            scroll_to(document.body, 0, high / 100)
+            // scroll_to(document.body, 0, high / 100)
+            scroll_to(document.body, 0, 100)
         } else {
             scroll_to(document.body, 0, 100)
         }
     }
 })
+
+
 
 
 /*
@@ -50,6 +69,12 @@ function fade_out(e) {
     } else {
         ele.style.display = "none"
     }
+}
+
+function hide(e) {
+    var ele = document.querySelector(e)
+    ele.style.opacity = 1
+    ele.style.display = "none"
 }
 
 function toggle_sf(e) {

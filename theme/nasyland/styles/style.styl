@@ -22,19 +22,19 @@ body
     background-color: $color-background
 
     border-radius: 1rem
+    // box-shadow:
+    //     4px 4px 10px invert($color-background3),
+    //     -4px -4px 10px invert($color-background3),
+    //     inset 4px 4px 10px invert($color-background3),
+    //     inset -4px -4px 10px invert($color-background3)
+    // &:hover
     box-shadow:
         4px 4px 10px invert($color-background3),
         -4px -4px 10px invert($color-background3),
-        inset 4px 4px 10px invert($color-background3),
-        inset -4px -4px 10px invert($color-background3)
-    &:hover
-        box-shadow:
-            4px 4px 10px invert($color-background3),
-            -4px -4px 10px invert($color-background3),
-            inset 4px 4px 10px $color-background-1,
-            inset -4px -4px 10px $color-background-1,
-            5px 5px 10px $color-background-4,
-            -5px -5px 10px $color-background-4
+        inset 4px 4px 10px $color-background-1,
+        inset -4px -4px 10px $color-background-1,
+        5px 5px 10px $color-background-4,
+        -5px -5px 10px $color-background-4
 
     display: flex
     flex-flow: column nowrap
@@ -148,6 +148,7 @@ body
     max-width: 16vw
     min-width: 140px
     min-height: 180px
+    max-height: 60vh
     overflow: auto
     position: fixed
     right: 2rem

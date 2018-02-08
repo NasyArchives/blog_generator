@@ -17,16 +17,12 @@
                     <time datetime="{{ blink.time }}"></time>
                 </p>
             </div>
+            {% if blink.summary %}
             <div class="blog_link_summary">
                 <i class="fas fa-quote-left"></i>
-                {% if blink.summary %}
                     {{ blink.summary }}
-                {% else %}
-                    <P>
-                        no summary
-                    </P>
-                {% endif %}
             </div>
+            {% endif %}
             {% if blink.tags %}
                 {% include "component/tag.html" %}
             {% endif %}

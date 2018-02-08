@@ -35,12 +35,14 @@ Excited without bugs::
 
 Copyright © 2017 by Nasy. All Rights Reserved.
 """
-from sumy.parsers.html import HtmlParser
-from sumy.nlp.tokenizers import Tokenizer
-from sumy.nlp.stemmers import Stemmer
-from sumy.utils import get_stop_words
-from sumy.summarizers.lex_rank import LexRankSummarizer
+#TODO(Nasy): Toooooooooooooo Slooooooooooooooooow
 from typing import List
+
+from sumy.nlp.stemmers import Stemmer
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.parsers.html import HtmlParser
+from sumy.summarizers.lex_rank import LexRankSummarizer
+from sumy.utils import get_stop_words
 
 assert List
 
@@ -50,21 +52,28 @@ class Summary:
 
     def __init__(self, text: str, language: str = "chinese") -> None:
         """Initilize the Summary."""
-        self.parser = HtmlParser(text, Tokenizer(language))
+        self.parser = None  # type: HtmlParser
         stemmer = Stemmer(language)
         self.summarizer = LexRankSummarizer(stemmer)
         self.summarizer.stop_words = get_stop_words(language)
         self.sentences = []  # type: List[str]
-        self._run()
+        self(text)
 
     def _run(self) -> None:
         """Run to find sentences of document."""
+        self.sentences = []
         for sentence in self.summarizer(self.parser.document, 20):
             if "「" not in str(sentence) and "」" not in str(sentence):
                 self.sentences.append(sentence)
 
+    def __call__(self, text: str, language: str = "chinese") -> str:
+        """Set text strings."""
+        self.parser = HtmlParser(text, Tokenizer(language))
+        return self.get()
+
     def get(self, n: int = 4) -> str:
         """Get n sentences."""
+        self._run()
         summary = "".join([
             "<li class=\"blog_link_summary_list\">"
             f"<i class=\"fas fa-circle-notch fa-sm\"></i><p>{i}</p>"
